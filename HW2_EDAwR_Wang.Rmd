@@ -44,6 +44,8 @@ for this homework assignment in your GitHub account. Periodically push your comm
 to GitHub. When done with the assignment, paste in the URL of your GitHub project
 so that I can go look at it.
 
+>GitHub URL:https://Alice4ever@github.com
+
 ## Step 3 - Explore data folder
 
 Inside of the main project folder you'll find the data files for this assignment in a subfolder called `data/`.
@@ -97,14 +99,18 @@ You should read the **county.csv** file into a data frame named county_df and
 **county_mi_df.csv** into a data frame named county_mi_df.
 
 ```{r read_countydata}
-# county_df <- ???
-# county_mi_df <- ???
+county_df <- read.table("data/county.csv",
+                      header=TRUE, sep=",",
+                      stringsAsFactors=TRUE)
+county_mi_df <- read.table("data/county_MI.csv",
+                      header=TRUE, sep=",",
+                      stringsAsFactors=TRUE)
 
 ```
 
 * What does each row represent?
 
-> Put your answer here ... 
+> Each row represents an observation/record.
 
 Check the structure of each data.frame and use the `summary` function to begin
 exploring the data. 
@@ -120,7 +126,8 @@ summary(county_df)
 summary(county_mi_df)
 ```
 
-> Put your answer here ... 
+> ChildPoverty in data frame county_df has 1 NA value.
+county_mi_df has one more column named "Peninsula" than county_df. It has less obersavations because most of the data is a subset data from county_df and it is only for Michigan state.
 
 **Unless otherwise specified, you should use the ggplot2 package for all of the
 following plots.**
@@ -140,18 +147,80 @@ In addition, compute and display the following statistics for Income and IncomeP
 
 
 ```{r summary_stats}
+# summary stats for Income
+mean_income <- mean(county_df$Income)
+mean_income
+
+median(county_df$Income)
+
+sd_income <- sd(county_df$Income)
+sd_income
+
+min_income <- min(county_df$Income)
+min_income
+
+max_income <- max(county_df$Income)
+max_income
+
+range_income <- max_income - min_income
+range_income
+
+quantile(county_df$Income,0.95)
+quantile(county_df$Income,0.99)
+
+IQR_income <- quantile(county_df$Income,0.75) - quantile(county_df$Income,0.25)
+IQR_income
+
+cv_income <- sd_income / mean_income
+cv_income
+
+# summary stats for IncomePerCap
+mean_IncomePerCap<- mean(county_df$IncomePerCap)
+mean_IncomePerCap
+
+median(county_df$IncomePerCap)
+
+sd_IncomePerCap<- sd(county_df$IncomePerCap)
+sd_IncomePerCap
+
+min_IncomePerCap<- min(county_df$IncomePerCap)
+min_IncomePerCap
+
+max_IncomePerCap<- max(county_df$IncomePerCap)
+max_IncomePerCap
+
+range_IncomePerCap<- max_IncomePerCap - min_IncomePerCap
+range_IncomePerCap
+
+quantile(county_df$IncomePerCap,0.95)
+quantile(county_df$IncomePerCap,0.99)
+
+IQR_IncomePerCap <- quantile(county_df$IncomePerCap,0.75) - quantile(county_df$IncomePerCap,0.25)
+IQR_IncomePerCap
+
+cv_IncomePerCap <- sd_IncomePerCap / mean_IncomePerCap
+cv_IncomePerCap
+
 
 ```
 
 ```{r histo_dens}
-
+options(scipen = 999)
+ggplot(data = county_df) +
+  geom_histogram(mapping = aes(x=Income))
+ggplot(data = county_df) +
+  geom_histogram(mapping = aes(x=IncomePerCap))
+ggplot(data= county_df) + 
+  geom_density(aes(x=Income))
+ggplot(data= county_df) + 
+  geom_density(aes(x=IncomePerCap))
 ```
 
 
 Write a short paragraph describing the distribution of of these two variables.
 
 > Your interpretation of the summary stats and plots above...
->
+> These two distributions are skewed to right slightly with a single peak. The right tail (larger values) is much longer than the left tail (small values). This indicates the bulk of the Income/IncomePerCap are small/medium, with a few that are much larger than the rest. There are even outliers at the right end which fall outside the overall histogram pattern indicating the presence of a very large value.
 
 Repeat the histogram for Income but make the following style changes to the plot.
 
@@ -161,24 +230,26 @@ Repeat the histogram for Income but make the following style changes to the plot
 * Change the colors of the bars to something other than the default
 
 ```{r histo_stylechanges}
-
+ggplot(data = county_df) + 
+  geom_histogram(mapping = aes(x=Income), fill="blue", color="black") +
+  labs(title="Distribution of median income for US counties", x="Median income", y="Number of counties")
 ```
 
 Now create a set of histograms for Income in which you facet by Division.
 
 ```{r histos_division}
-# ggplot(county_df) + 
-#   geom_histogram(aes(x=Income)) +
-#   ???
+ggplot(county_df) +
+  geom_histogram(aes(x=Income)) +
+  facet_wrap(~Division)
 ```
 
 Since the number of counties varies by Division, create a new version of the plot above but modify so that the y-axis shows frequency percentages instead of
 counts. Hint: `..density..`
 
 ```{r histos_division_density}
-# ggplot(county_df) + 
-#   geom_histogram(aes(???)) +
-#   ???
+ggplot(county_df) +
+ geom_histogram(aes(x=Income, y=..density..)) +
+ facet_wrap(~Division)
 ```
 
 
@@ -187,17 +258,36 @@ see that for both of these plot types, ggplot wants an `x` aesthetic to act as a
 
 ```{r box_violin}
 # Boxplots and violin plots
-
+options(scipen = 999)
+  ggplot(county_df) +
+  geom_boxplot(aes(x=Region, y=Income), 
+               fill="#FF9999", colour="black")
+  ggplot(county_df) +
+  geom_violin(aes(x=Region, y=Income), 
+              fill="steelblue", colour="black")
+  
+  ggplot(county_df) +
+  geom_boxplot(aes(x=Region, y=IncomePerCap), 
+               fill="#FF9999", colour="black")
+  ggplot(county_df) +
+  geom_violin(aes(x=Region, y=IncomePerCap), 
+              fill="steelblue", colour="black")
 ```
 
 > Your interpretation ...
->
+>Income and IncomePerCap shows similar pattern of boxplots and violin plots with respect to different regions. 
+The outliers in boxplots are corresponded to the thinnest sides of violin plots.
+We can only read median, range and outliers from boxplots, but violin plots tell more data information. The widest part shows the high frequency data and the thinest side shows least frequency data. For example, from the income box plot, we can see Northeast has a higer median than Midwest, but from the violin plot, at the same $50000 level, we can see Midwest has a relatively higher frequency.
+
 
 Repeat the histogram of Income but only for counties with less than 500,000 people. Do NOT use
 dplyr to do the filtering - instead, use boolean indexing (see intro to dataframes Rmd file).
 
 ```{r histo_lt1.5m1}
-
+is.county.ok <- county_df$TotalPop < 500000
+ggplot(county_df[!is.county.ok,]) +
+  geom_histogram(aes(x=Income), fill="blue", color="black") +
+  labs(title="Distribution of median income for county population less than 500000", x="Median income", y="Number of counties")
 
 
 ```
@@ -206,6 +296,12 @@ dplyr to do the filtering - instead, use boolean indexing (see intro to datafram
 Income. 
 
 ```{r hackerxtra_kdoverlay}
+g_hist <- ggplot(county_df[!is.county.ok,]) +
+  geom_histogram(aes(x=Income,y=..density..), fill="blue", color="black") +
+  labs(title="Distribution of median income for county population less than 500000", x="Median income")
+g_hist
+g_hist +
+  geom_density((aes(x=Income)),alpha=.2, fill="#FF6666")
 
 ```
 
@@ -215,6 +311,9 @@ Create violin plots showing Income by peninsula. Make sure
 your graph has a title and good axis labels.
 
 ```{r vp_inc_by_peninsula}
+ggplot(county_mi_df) + 
+  geom_violin(aes(x= peninsula, y= Income),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Income By Peninsula")
 
 
 ```
@@ -223,17 +322,41 @@ Do the peninsulas
 differ with respect to distribution of median income over the counties?
 
 > Your discussion...
+Yes, they do differ with repect to distribution of median income.
+Compared with Lower peninsula,the distribution of median income in Upper peninsula looks more like a normal distribution because the both sides of the vilion plot are having a similar shape. This indicated that median income over the counties of upper peninsula are having less diversities. They are more close to each other, all clustering within 35000-50000.
+On the other hand, the violin plot of LP has a longer, thinner shape. The thinner upper side indicates that there are some outliers, a small group of large numbers are pulling up the median income. The median income varies more widely from below 35000 up to 80000. All the higher median income (>50000) are in lower peninsulas.
 
 Create several boxplots and/or violin plots showing how the peninsulas compare with respect to
 some of the other variables. Summarize your findings in a few short paragraphs.
 
 ```{r boxplots_upvlp}
-
-
+ggplot(county_mi_df) + 
+  geom_violin(aes(x= peninsula, y= TotalPop),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Population By Peninsula")+
+    scale_y_log10()
+ggplot(county_mi_df) + 
+  geom_boxplot(aes(x= peninsula, y= TotalPop),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Population By Peninsula")+
+  scale_y_log10()
+ggplot(county_mi_df) + 
+  geom_violin(aes(x= peninsula, y= MeanCommute),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Mean Commute Time By Peninsula")
+ggplot(county_mi_df) + 
+  geom_violin(aes(x= peninsula, y= Construction),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Construction By Peninsula")
+ggplot(county_mi_df) + 
+  geom_violin(aes(x= peninsula, y= Poverty),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Poverty Distribution By Peninsula")
+ggplot(county_mi_df) + 
+  geom_violin(aes(x= peninsula, y= Professional),fill="steelblue", colour="black") +
+   labs(xlab="Peninsula", title="Michian Professional Distribution By Peninsula")
 ```
 
 > Your discussion ...
-
+Population: The majority of Upper Peninsula counties have smaller counties with total population around 10000 and the biggest county's population is less than 100000. While in lower peninsula, smallest county is almost 10000 and the majority counties are around 50000. A few bigger county are between 10000 and up to 1000000. We can say compared with lower peninsula, upper peninsula has relatively smaller counties and county size is no big difference.
+Mean Conmmute Time: Although the majority of commute time is similar to each other.
+lower peninsula counties have a relatively longer commute time than upper peninsula. Their shortest and longest commutetime are both longer than the ones in upper peninsula.
+With respect of contruction, poverty and professional, lower peninsula has a wider range of different levels over the counties than upper peninsula.The majotiy of upper peninsula has higher poverty level, less professional level and more construction.
 
 ### Problem 4 - Basic bar chart
 
@@ -242,7 +365,10 @@ your graph has a title and good axis labels. Figure out how to format the
 x-axis labels so that they don't obscure each other.
 
 ```{r bar_counties_by_state}
-
+ggplot(county_df) +
+  geom_bar(aes(x=State))+ 
+  ggtitle("Counties By State") +
+  theme(axis.text.x= element_text(angle = 90, hjust = 1))
 
 ```
 
@@ -250,7 +376,14 @@ x-axis labels so that they don't obscure each other.
 
 ```{r bar_counties_by_state_hackerxtra, fig.height=6}
 
-
+library(dplyr)
+county_df %>% 
+  count(State, Region) %>% 
+  ggplot(aes(x = reorder(State, n), y = n, fill=Region))+
+  geom_col()+
+  coord_flip()+
+  ggtitle("Counties By State")+
+  ylab("Count of Counties")
 ```
 
 ### Problem 5 - Basic scatter plots
@@ -259,7 +392,8 @@ Create a scatter plot using the Michigan only data frame comparing
 IncomePerCap and MeanCommute.
 
 ```{r xy_inc_commute}
-
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=MeanCommute, y=IncomePerCap))
 ```
 
 Create a modified version of the above scatter plot in which the point color
@@ -267,11 +401,17 @@ is mapped to peninsula and the size is mapped to total population. In addition,
 create a similar plot comparing Income and Professional.
 
 ```{r xy_inc_commute_peninsula}
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=MeanCommute, y=IncomePerCap, color=peninsula, size=TotalPop))
 
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=Professional, y=Income, color=peninsula, size=TotalPop))
 ```
 
 > Your thoughts on the relationship between these variables?
->
+>By examing the scatter plot of IncomePerCap and MeanCommute, we can see that the plotting does not show a very obvious uphill/downhill pattem from left to right. So the MeanCommute does not relate to IncomePerCap very much, longer MeanCommute time does not indicate a better IncomePerCap.By examing the plot size and color,we can see LP Peninsula has more TotalPop and people there has longer MeanCommute time and more IncomePerCap; On the other hand, Upper Peninsula's average commute time is less than 25min and IncomePerCap is less than $30000. Their population is smaller too.
+>The scatter plot of Income and Professional shows a strong positive relationship between these two variables, which indicates people having higher professional level has higher income. Still, Upper Peninsula with a smaller population has a lower income(no higher value >50000) and all the professional levlel is below 40. Several higher profrofessional level sample are all belong to Lower Peninsula.
+
 
 Now, create a few more scatter plots using variables of your choosing in which
 you facet by peninsula as well. How do the relationships compare across the
@@ -279,15 +419,38 @@ peninsulas?
 
 
 ```{r xy_faceted_peninsula1}
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=MeanCommute, y=IncomePerCap, colour= peninsula))+
+  facet_wrap(~peninsula)
+
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=Construction, y=MeanCommute,colour= peninsula))+
+facet_wrap(~peninsula)
+
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=Professional, y=Income,colour= peninsula))+
+facet_wrap(~peninsula)
+
+ggplot(data = county_mi_df) + 
+  geom_point(aes(x=Professional, y=ChildPoverty,colour= peninsula))+
+facet_wrap(~peninsula)
 
 ```
+> scatterplot 1: for Lower peninsula, scatterplots of MeanCommute and IncomePerCap still does not indicate a positive relationship between them, while for upper peninsula, it looks like with the increase of mean commute time, the income per cap increases(except some outliers.)
+scatterplot 2: this plots showed a slight positive relationship between construction and meancommute in both peninsulas. It looks like upper peninsula has a relatively stronger correlation between these two variables.
+Scatterplot 3 shows in  both peninsulas, a better professional level indicates a better income. Upper peninsular has a wider range of Income as well as Professioal level than lower peninsular.
+Scatterplot 4 shows in  both peninsulas, a better professional level indicates less child poverty. Likewise, Upper peninsular has more varieties of child poverty  as well as Professioal level.
+
+
 
 Now use the full US data frame, county_df.
 
 Create a scatter plot of TotalPop by IncomePerCap.
 
 ```{r xy_pop_inc}
-
+options(scipen = 999)
+ggplot(data = county_df) + 
+  geom_point(aes(x=IncomePerCap, y=TotalPop))
 ```
 
 
@@ -299,10 +462,16 @@ transform of data when plotting.
 
 
 ```{r log10}
-
+ggplot(county_df) +
+  geom_point(aes(x=IncomePerCap, y=TotalPop)) + 
+   ylab("log(TotalPop)") + 
+    scale_y_log10()
+  
 ```
 
 > Discussion ...
+In the first plot, the majority of points were clustered on the bottom part of the graph because Y axis scale is wide, which makes it hard to visulatize the plotting pattern and relationship between two variables. To improve this, one might use log transformation to either transform axis scale or transform the column data.
+In my plot,I transformed Y axis scale to make the plotting pattern more clearer. It seems like these two variables have a positive relationship.
 
 ## Deliverables
 
