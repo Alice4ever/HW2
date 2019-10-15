@@ -1,8 +1,10 @@
 ---
-title: "HW2-EDA with R - Part1: Plotting"
+title: 'HW2-EDA with R - Part1: Plotting'
 author: "misken"
 date: "September 29, 2019"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -43,8 +45,8 @@ track the .R file, the .Rmd file and your .gitignore file. Create a remote repo
 for this homework assignment in your GitHub account. Periodically push your commits
 to GitHub. When done with the assignment, paste in the URL of your GitHub project
 so that I can go look at it.
-
->GitHub URL:https://Alice4ever@github.com
+  
+>Github URL: https://github.com/Alice4ever/HW2
 
 ## Step 3 - Explore data folder
 
@@ -220,6 +222,7 @@ ggplot(data= county_df) +
 Write a short paragraph describing the distribution of of these two variables.
 
 > Your interpretation of the summary stats and plots above...
+
 > These two distributions are skewed to right slightly with a single peak. The right tail (larger values) is much longer than the left tail (small values). This indicates the bulk of the Income/IncomePerCap are small/medium, with a few that are much larger than the rest. There are even outliers at the right end which fall outside the overall histogram pattern indicating the presence of a very large value.
 
 Repeat the histogram for Income but make the following style changes to the plot.
@@ -275,6 +278,7 @@ options(scipen = 999)
 ```
 
 > Your interpretation ...
+
 >Income and IncomePerCap shows similar pattern of boxplots and violin plots with respect to different regions. 
 The outliers in boxplots are corresponded to the thinnest sides of violin plots.
 We can only read median, range and outliers from boxplots, but violin plots tell more data information. The widest part shows the high frequency data and the thinest side shows least frequency data. For example, from the income box plot, we can see Northeast has a higer median than Midwest, but from the violin plot, at the same $50000 level, we can see Midwest has a relatively higher frequency.
@@ -285,7 +289,7 @@ dplyr to do the filtering - instead, use boolean indexing (see intro to datafram
 
 ```{r histo_lt1.5m1}
 is.county.ok <- county_df$TotalPop < 500000
-ggplot(county_df[!is.county.ok,]) +
+ ggplot(county_df[!is.county.ok,]) +
   geom_histogram(aes(x=Income), fill="blue", color="black") +
   labs(title="Distribution of median income for county population less than 500000", x="Median income", y="Number of counties")
 
@@ -296,11 +300,9 @@ ggplot(county_df[!is.county.ok,]) +
 Income. 
 
 ```{r hackerxtra_kdoverlay}
-g_hist <- ggplot(county_df[!is.county.ok,]) +
+ggplot(county_df[!is.county.ok,]) +
   geom_histogram(aes(x=Income,y=..density..), fill="blue", color="black") +
-  labs(title="Distribution of median income for county population less than 500000", x="Median income")
-g_hist
-g_hist +
+  labs(title="Distribution of median income for county population less than 500000", x="Median income")+
   geom_density((aes(x=Income)),alpha=.2, fill="#FF6666")
 
 ```
@@ -322,9 +324,12 @@ Do the peninsulas
 differ with respect to distribution of median income over the counties?
 
 > Your discussion...
-Yes, they do differ with repect to distribution of median income.
-Compared with Lower peninsula,the distribution of median income in Upper peninsula looks more like a normal distribution because the both sides of the vilion plot are having a similar shape. This indicated that median income over the counties of upper peninsula are having less diversities. They are more close to each other, all clustering within 35000-50000.
-On the other hand, the violin plot of LP has a longer, thinner shape. The thinner upper side indicates that there are some outliers, a small group of large numbers are pulling up the median income. The median income varies more widely from below 35000 up to 80000. All the higher median income (>50000) are in lower peninsulas.
+
+> Yes, they do differ with repect to distribution of median income.
+
+> Compared with Lower peninsula,the distribution of median income in Upper peninsula looks more like a normal distribution because the both sides of the vilion plot are having a similar shape. This indicated that median income over the counties of upper peninsula are having less diversities. They are more close to each other, all clustering within 35000-50000.
+
+> On the other hand, the violin plot of LP has a longer, thinner shape. The thinner upper side indicates that there are some outliers, a small group of large numbers are pulling up the median income. The median income varies more widely from below 35000 up to 80000. All the higher median income (>50000) are in lower peninsulas.
 
 Create several boxplots and/or violin plots showing how the peninsulas compare with respect to
 some of the other variables. Summarize your findings in a few short paragraphs.
@@ -353,10 +358,13 @@ ggplot(county_mi_df) +
 ```
 
 > Your discussion ...
-Population: The majority of Upper Peninsula counties have smaller counties with total population around 10000 and the biggest county's population is less than 100000. While in lower peninsula, smallest county is almost 10000 and the majority counties are around 50000. A few bigger county are between 10000 and up to 1000000. We can say compared with lower peninsula, upper peninsula has relatively smaller counties and county size is no big difference.
-Mean Conmmute Time: Although the majority of commute time is similar to each other.
+
+> Population: The majority of Upper Peninsula counties have smaller counties with total population around 10000 and the biggest county's population is less than 100000. While in lower peninsula, smallest county is almost 10000 and the majority counties are around 50000. A few bigger county are between 10000 and up to 1000000. We can say compared with lower peninsula, upper peninsula has relatively smaller counties and county size is no big difference.
+
+> Mean Conmmute Time: Although the majority of commute time is similar to each other.
 lower peninsula counties have a relatively longer commute time than upper peninsula. Their shortest and longest commutetime are both longer than the ones in upper peninsula.
-With respect of contruction, poverty and professional, lower peninsula has a wider range of different levels over the counties than upper peninsula.The majotiy of upper peninsula has higher poverty level, less professional level and more construction.
+
+> With respect to contruction, poverty and professional, lower peninsula has a wider range of different levels over the counties than upper peninsula.The majotiy of upper peninsula has higher poverty level, less professional level and more construction.
 
 ### Problem 4 - Basic bar chart
 
@@ -409,8 +417,11 @@ ggplot(data = county_mi_df) +
 ```
 
 > Your thoughts on the relationship between these variables?
->By examing the scatter plot of IncomePerCap and MeanCommute, we can see that the plotting does not show a very obvious uphill/downhill pattem from left to right. So the MeanCommute does not relate to IncomePerCap very much, longer MeanCommute time does not indicate a better IncomePerCap.By examing the plot size and color,we can see LP Peninsula has more TotalPop and people there has longer MeanCommute time and more IncomePerCap; On the other hand, Upper Peninsula's average commute time is less than 25min and IncomePerCap is less than $30000. Their population is smaller too.
->The scatter plot of Income and Professional shows a strong positive relationship between these two variables, which indicates people having higher professional level has higher income. Still, Upper Peninsula with a smaller population has a lower income(no higher value >50000) and all the professional levlel is below 40. Several higher profrofessional level sample are all belong to Lower Peninsula.
+
+> By examing the scatter plot of IncomePerCap and MeanCommute, we can see that the plotting does not show a very obvious uphill/downhill pattem from left to right. So the MeanCommute does not relate to IncomePerCap very much, longer MeanCommute time does not indicate a better IncomePerCap.
+
+> By examing the plot size and color,we can see LP Peninsula has more TotalPop and people there has longer MeanCommute time and more IncomePerCap; On the other hand, Upper Peninsula's average commute time is less than 25min and IncomePerCap is less than $30000. Their population is smaller too.
+> The scatter plot of Income and Professional shows a strong positive relationship between these two variables, which indicates people having higher professional level has higher income. Still, Upper Peninsula with a smaller population has a lower income(no higher value >50000) and all the professional levlel is below 40. Several higher profrofessional level sample are all belong to Lower Peninsula.
 
 
 Now, create a few more scatter plots using variables of your choosing in which
@@ -422,24 +433,37 @@ peninsulas?
 ggplot(data = county_mi_df) + 
   geom_point(aes(x=MeanCommute, y=IncomePerCap, colour= peninsula))+
   facet_wrap(~peninsula)
+```
 
+
+> For Lower peninsula, scatterplots of MeanCommute and IncomePerCap still does not indicate a positive relationship between them, while for upper peninsula, it looks like with the increase of mean commute time, the income per cap increases(except some outliers.)
+
+```{r xy_faceted_peninsula2}
 ggplot(data = county_mi_df) + 
   geom_point(aes(x=Construction, y=MeanCommute,colour= peninsula))+
 facet_wrap(~peninsula)
+```
 
+> this plots showed a slight positive relationship between construction and meancommute in both peninsulas. It looks like upper peninsula has a relatively stronger correlation between these two variables.
+
+```{r xy_faceted_peninsula3}
 ggplot(data = county_mi_df) + 
   geom_point(aes(x=Professional, y=Income,colour= peninsula))+
 facet_wrap(~peninsula)
+```
 
+
+> This scatter plot shows in both peninsulas, a better professional level indicates a better income. Upper peninsular has a wider range of Income as well as Professioal level than lower peninsular.
+
+```{r xy_faceted_peninsula4}
 ggplot(data = county_mi_df) + 
   geom_point(aes(x=Professional, y=ChildPoverty,colour= peninsula))+
 facet_wrap(~peninsula)
 
 ```
-> scatterplot 1: for Lower peninsula, scatterplots of MeanCommute and IncomePerCap still does not indicate a positive relationship between them, while for upper peninsula, it looks like with the increase of mean commute time, the income per cap increases(except some outliers.)
-scatterplot 2: this plots showed a slight positive relationship between construction and meancommute in both peninsulas. It looks like upper peninsula has a relatively stronger correlation between these two variables.
-Scatterplot 3 shows in  both peninsulas, a better professional level indicates a better income. Upper peninsular has a wider range of Income as well as Professioal level than lower peninsular.
-Scatterplot 4 shows in  both peninsulas, a better professional level indicates less child poverty. Likewise, Upper peninsular has more varieties of child poverty  as well as Professioal level.
+
+
+> This shows in  both peninsulas, a better professional level indicates less child poverty. Likewise, Upper peninsular has more varieties of child poverty  as well as Professioal level.
 
 
 
@@ -470,8 +494,10 @@ ggplot(county_df) +
 ```
 
 > Discussion ...
-In the first plot, the majority of points were clustered on the bottom part of the graph because Y axis scale is wide, which makes it hard to visulatize the plotting pattern and relationship between two variables. To improve this, one might use log transformation to either transform axis scale or transform the column data.
-In my plot,I transformed Y axis scale to make the plotting pattern more clearer. It seems like these two variables have a positive relationship.
+
+> In the first plot, the majority of points were clustered on the bottom part of the graph because Y axis scale is wide, which makes it hard to visulatize the plotting pattern and relationship between two variables. To improve this, one might use log transformation to either transform axis scale or transform the column data.
+
+> In my plot,I transformed Y axis scale to make the plotting pattern more clearer. It seems like these two variables have a positive relationship.
 
 ## Deliverables
 
